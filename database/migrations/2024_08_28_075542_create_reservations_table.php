@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('doctor_id');
             $table->unsignedBigInteger('user_id');
             $table->date('reservation_date')->nullable();
+            $table->enum('status',['pending','confirmed','cancelled'])->default('pending');
             $table->timestamps();
         });
     }

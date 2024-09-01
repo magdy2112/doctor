@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Doctor;
 use App\Models\Reservation;
+use App\Notifications\ReservationNotification;
 use App\Traits\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -12,7 +14,7 @@ use Illuminate\Support\Carbon;
 class ReservationController extends Controller
 {
     use HttpResponse;
-    public function reservation(request $request)
+    public function user_reservation(request $request)
     {
         $user = auth()->user();
         if ($user) {
@@ -20,22 +22,19 @@ class ReservationController extends Controller
             $reservation_request =  $request->validate([
                 'doctor_id' => 'required|integer|exists:doctors,id',
                 'reservation_date' => 'required|date',
-                'user_id'=>'required',
+                'user_id' => 'required',
 
             ]);
+
             $doctor_id = request()->input('doctor_id');
 
             $reservation_date = Carbon::parse(request()->input('reservation_date'))->format('Y-m-d');
 
-
-
             $reservation_request['doctor_id'] = $doctor_id;
-            $reservation_request['user_id'] =auth()->user()->id;
 
+            $reservation_request['user_id'] = auth()->user()->id;
 
             $reservation_request['reservation_date'] = $reservation_date;
-
-
 
             $user_id = auth()->user()->id;
 
@@ -54,19 +53,23 @@ class ReservationController extends Controller
             $carbon_reservation_date = Carbon::parse($reservation_date);
 
             $reservation_day = $carbon_reservation_date->format('l');
-
+            // dd(  $available_appointments_days);
 
             if (in_array($reservation_day, $available_appointments_days) && $carbon_reservation_date > $today) {
+
                 $Reservation_store = Reservation::create($reservation_request);
-                return $this->response(true,200,'Booking Successfully', $Reservation_store);
+
+                // $doctor = Doctor::find($doctor_id);
+
+                // $doctor->notify(new ReservationNotification($Reservation_store));
+
+
+                return $this->response(true, 200, 'Booking Successfully', $Reservation_store);
             } else {
                 return 'not available';
             }
-
-
-
-
-            // return  $this->response(true, 200, 'Available appointments', ['user_id' => $user_id, 'available_appointments' => $available_appointments]);
         }
     }
+
+    public function confirmReservation(request $request, $id) {}
 }

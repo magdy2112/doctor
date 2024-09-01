@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => env('AUTH_GUARD', 'user'),
+        'passwords' => env('AUTH_PASSWORD_BROKER', 'user'),
     ],
 
     /*
@@ -44,12 +44,12 @@ return [
         'driver' => 'session',
         'provider' => 'doctors',
     ],
-    'api' => [
-        'driver' => 'token',
-        'provider' => 'users',
-        'token_column' => 'remember_token',
+    // 'api' => [
+    //     'driver' => 'token',
+    //     'provider' => 'users',
+    //     'token_column' => 'remember_token',
 
-    ],
+    // ],
 ],
 
     /*
