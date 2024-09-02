@@ -54,7 +54,7 @@ class UserController extends Controller
     public function userprofile($id)
     {
         try {
-           
+
             $user = User::find($id);
             if ($user->id == auth()->user()->id) {
                 return $this->response(true, 200, 'ok', $user);
@@ -75,6 +75,12 @@ class UserController extends Controller
     //         return $this->response(false, 401, 'Unauthorized');
     //     }
     // }
+    public function find_doctor(request $request){
+      $doctors = Doctor::where('name','like',"%{$request->input('name')}%")->get();
+    //   dd(  $doctors);
+    return       $doctors;
+
+    }
 
 
 }

@@ -9,7 +9,7 @@ use App\Notifications\ReservationNotification;
 use App\Traits\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-
+use Illuminate\Support\Facades\Notification;
 
 class ReservationController extends Controller
 {
@@ -59,9 +59,32 @@ class ReservationController extends Controller
 
                 $Reservation_store = Reservation::create($reservation_request);
 
-                // $doctor = Doctor::find($doctor_id);
+                $doctor = Doctor::find($doctor_id);
 
-                // $doctor->notify(new ReservationNotification($Reservation_store));
+                $doctor->notify(new ReservationNotification($Reservation_store));
+
+
+            //    // Create a pending notification for the doctor
+            //    $doctor_notification = new Notification();
+            //    $doctor_notification->notifiable_id = $doctor->id;
+            //    $doctor_notification->notifiable_type = get_class($doctor);
+            //    $doctor_notification->data = ['message' => 'You have a new reservation from ' . $user->name, 'reservation_id' => $Reservation_store->id];
+            //    $doctor_notification->status = 'pending'; // Set status to pending
+            //    $doctor_notification->save();
+
+            //    // Create a pending notification for the user
+            //    $user_notification = new Notification();
+            //    $user_notification->notifiable_id = $user->id;
+            //    $user_notification->notifiable_type = get_class($user);
+            //    $user_notification->data = ['message' => 'Your reservation is pending confirmation from the doctor.'];
+            //    $user_notification->status = 'pending'; // Set status to pending
+            //    $user_notification->save();
+
+            //    // Send a request to the doctor to confirm the reservation
+            //    $doctor_request = new Request();
+            //    $doctor_request->reservation_id = $Reservation_store->id;
+            //    $doctor_request->status = 'pending'; // Set status to pending
+            //    $doctor_request->save();
 
 
                 return $this->response(true, 200, 'Booking Successfully', $Reservation_store);

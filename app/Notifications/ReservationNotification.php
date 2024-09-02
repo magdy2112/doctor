@@ -27,19 +27,19 @@ class ReservationNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database'];
     }
 
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toDatabase(object $notifiable): array
     {
-        return (new MailMessage)
-        ->subject('New Reservation ')
-        ->line('You have a new reservation from ' . $this->reservation->user->name)
-        ->line('Reservation Date: ' . $this->reservation->reservation_date);
-
+        return [
+        'subject'=>'New Reservation ',
+        'message'=>'You have a new reservation from ' . $this->reservation->user->name,
+        'Reservation_Date' =>  $this->reservation->reservation_date,
+        ];
     }
 
     /**
