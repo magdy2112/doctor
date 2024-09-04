@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Reservation;
+use App\Models\User;
 use App\Notifications\ReservationNotification;
+use App\Notifications\ReservationStatusNotification;
 use App\Traits\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -64,29 +66,6 @@ class ReservationController extends Controller
                 $doctor->notify(new ReservationNotification($Reservation_store));
 
 
-            //    // Create a pending notification for the doctor
-            //    $doctor_notification = new Notification();
-            //    $doctor_notification->notifiable_id = $doctor->id;
-            //    $doctor_notification->notifiable_type = get_class($doctor);
-            //    $doctor_notification->data = ['message' => 'You have a new reservation from ' . $user->name, 'reservation_id' => $Reservation_store->id];
-            //    $doctor_notification->status = 'pending'; // Set status to pending
-            //    $doctor_notification->save();
-
-            //    // Create a pending notification for the user
-            //    $user_notification = new Notification();
-            //    $user_notification->notifiable_id = $user->id;
-            //    $user_notification->notifiable_type = get_class($user);
-            //    $user_notification->data = ['message' => 'Your reservation is pending confirmation from the doctor.'];
-            //    $user_notification->status = 'pending'; // Set status to pending
-            //    $user_notification->save();
-
-            //    // Send a request to the doctor to confirm the reservation
-            //    $doctor_request = new Request();
-            //    $doctor_request->reservation_id = $Reservation_store->id;
-            //    $doctor_request->status = 'pending'; // Set status to pending
-            //    $doctor_request->save();
-
-
                 return $this->response(true, 200, 'Booking Successfully', $Reservation_store);
             } else {
                 return 'not available';
@@ -94,5 +73,21 @@ class ReservationController extends Controller
         }
     }
 
-    public function confirmReservation(request $request, $id) {}
+    public function update_reservation_status(request $request, $id) {
+        $reservation = Reservation::find($id);
+         $update_reservation_status = $request->validate([
+            'status' => 'required|in:confirmed,cancelled'
+
+         ]);
+        if (auth()->user()->id==$reservation->doctor_id) {
+            $reservation->status = $request->input('status');
+            $reservation->save();
+             $user_id = $reservation->user_id;
+             $user = User::find($user_id);
+             $user->notify(new ReservationStatusNotification($reservation));
+            return $this->response(true, 200, 'Reservation confirmed successfully');
+        } else {
+            return $this->response(false, 404, 'Not found');
+        }
+    }
 }

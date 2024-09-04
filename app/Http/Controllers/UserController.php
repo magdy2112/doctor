@@ -78,9 +78,19 @@ class UserController extends Controller
     public function find_doctor(request $request){
       $doctors = Doctor::where('name','like',"%{$request->input('name')}%")->get();
     //   dd(  $doctors);
-    return       $doctors;
+     if ( $doctors) {
+       return $this->response(true,200,'ok',$doctors);
+     }else{
+        return $this->response(false,404,'Not found');
+     }
 
     }
-
-
+    public function find_doctor_by_specialty(request $request){
+        $doctors = Doctor::where('specialization','like',"%{$request->input('specialty')}%")->get();
+     if ( $doctors) {
+        return $this->response(true,200,'ok',$doctors);
+    }else{
+       return $this->response(false,404,'Not found');
+    }
+}
 }
