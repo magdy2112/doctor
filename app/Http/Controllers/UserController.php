@@ -20,8 +20,8 @@ class UserController extends Controller
 
         $usercity = Auth()->user()->city;
 
-        $alldoctors = Doctor::where('city', $usercity)->orderBy('name')->get();
-        $alldoctor = Doctor::clone()->where('city', '!=', $usercity)->orderBy('name')->get();
+        $alldoctors = Doctor::where('city', $usercity)->select('name','photo','specialization')->orderBy('specialization')->paginate(10);
+        $alldoctor = Doctor::clone()->where('city', '!=', $usercity)->select('name','photo','specialization')->orderBy('specialization')->paginate(10);
 
         if ($alldoctors) {
 

@@ -49,15 +49,19 @@ class ReservationController extends Controller
             $available_appointments_days = $available_appointments_day->map(function ($startTime) {
                 return Carbon::parse($startTime)->format('l');
             })->toArray();
+            //  dd($available_appointments_days);
 
-            $today = Carbon::now();
+            $today = Carbon::today();
+            $ten_weeks_later = $today->copy()->addWeeks(10);
+
 
             $carbon_reservation_date = Carbon::parse($reservation_date);
+            // dd($carbon_reservation_date);
 
             $reservation_day = $carbon_reservation_date->format('l');
             // dd(  $available_appointments_days);
 
-            if (in_array($reservation_day, $available_appointments_days) && $carbon_reservation_date > $today) {
+            if (in_array($reservation_day, $available_appointments_days) && $carbon_reservation_date->between($today, $ten_weeks_later)) {
 
                 $Reservation_store = Reservation::create($reservation_request);
 
@@ -73,21 +77,17 @@ class ReservationController extends Controller
         }
     }
 
-    public function update_reservation_status(request $request, $id) {
-        $reservation = Reservation::find($id);
-         $update_reservation_status = $request->validate([
-            'status' => 'required|in:confirmed,cancelled'
 
-         ]);
-        if (auth()->user()->id==$reservation->doctor_id) {
-            $reservation->status = $request->input('status');
-            $reservation->save();
-             $user_id = $reservation->user_id;
-             $user = User::find($user_id);
-             $user->notify(new ReservationStatusNotification($reservation));
-            return $this->response(true, 200, 'Reservation confirmed successfully');
-        } else {
-            return $this->response(false, 404, 'Not found');
-        }
-    }
 }
+// https://vscode.dev/profile/github/e92d21ef9045234f1cb343398035d86a
+
+
+
+
+
+
+
+
+
+
+

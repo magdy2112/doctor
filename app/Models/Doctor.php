@@ -28,6 +28,7 @@ class Doctor extends Authenticatable
         'description',
         'age',
         'city',
+        'specialization'
 
     ];
     protected $hidden = [
@@ -52,6 +53,9 @@ class Doctor extends Authenticatable
     }
     public function appointments(){
         return $this->hasMany(Appointment::class,'doctor_id');
+    }
+    public function reservations(){
+        return $this->hasMany(Reservation::class,'doctor_id');
     }
 }
 

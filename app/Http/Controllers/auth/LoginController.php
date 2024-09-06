@@ -22,7 +22,7 @@ class LoginController extends Controller
         if (Auth::guard('user')->attempt($credentials)) {
             $user_data = User::where('email', '=', $credentials['email'])->first();
             $token = $user_data->createToken('login' . $user_data->id)->plainTextToken;
-            return $this->response(true, 200, 'user login Successfully', ['Token' => $token, 'userData' =>   $user_data]);
+            return $this->response(true, 200, 'user login Successfully', $token);
 
         } else {
             return $this->response(false, 400, 'error log in');
