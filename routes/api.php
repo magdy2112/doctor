@@ -17,6 +17,8 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('/doctorprofile/{id}', 'doctorprofile');
         Route::post('/find_doctor', 'find_doctor');
         Route::post('/find_doctor_by_specialty', 'find_doctor_by_specialty');
+        Route::get('/doctor_category/{specialization}', 'doctor_category');
+
 
 
         // Route::post('/reservation', 'reservation');

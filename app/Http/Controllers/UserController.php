@@ -20,8 +20,8 @@ class UserController extends Controller
 
         $usercity = Auth()->user()->city;
 
-        $alldoctors = Doctor::where('city', $usercity)->select('name','photo','specialization')->orderBy('specialization')->paginate(10);
-        $alldoctor = Doctor::clone()->where('city', '!=', $usercity)->select('name','photo','specialization')->orderBy('specialization')->paginate(10);
+        $alldoctors = Doctor::where('city', $usercity)->where('status','active')->select('name','photo','specialization')->orderBy('specialization')->paginate(10);
+        $alldoctor = Doctor::where('city', '!=', $usercity)->where('status','active')->select('name','photo','specialization')->orderBy('specialization')->paginate(10);
 
         if ($alldoctors) {
 
@@ -76,21 +76,29 @@ class UserController extends Controller
     //     }
     // }
     public function find_doctor(request $request){
-      $doctors = Doctor::where('name','like',"%{$request->input('name')}%")->get();
+      $doctors = Doctor::where('name','like',"%{$request->input('name')}%")->where('status','active')->paginate(10);
     //   dd(  $doctors);
      if ( $doctors) {
        return $this->response(true,200,'ok',$doctors);
      }else{
-        return $this->response(false,404,'Not found');
+        return $this->response(false,404,' doctor Not found');
      }
 
     }
     public function find_doctor_by_specialty(request $request){
-        $doctors = Doctor::where('specialization','like',"%{$request->input('specialty')}%")->get();
+        $doctors = Doctor::where('specialization','like',"%{$request->input('specialty')}%")->where('status','active')->paginate(10);
      if ( $doctors) {
         return $this->response(true,200,'ok',$doctors);
     }else{
-       return $this->response(false,404,'Not found');
+       return $this->response(false,404,'doctor Not found');
     }
 }
+
+public function doctor_category($specialization){
+
+    $categoriess = Doctor::where('specialization',$specialization)->where('status','active')->paginate(10);
+    return $this->response(true,200,'ok',$categoriess);
+}
+
+
 }

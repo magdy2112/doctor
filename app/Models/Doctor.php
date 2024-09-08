@@ -22,13 +22,15 @@ class Doctor extends Authenticatable
         'photo',
         'phone',
         'address',
-        'gender',
-        'qualification',
-        'experience',
-        'description',
         'age',
-        'city',
-        'specialization'
+        'experience',
+        'price',
+        'description',
+        'gender',
+       'status',
+       'qualification_id',
+       'specialization_id',
+       'city_id'
 
     ];
     protected $hidden = [
@@ -56,7 +58,18 @@ class Doctor extends Authenticatable
     }
     public function reservations(){
         return $this->hasMany(Reservation::class,'doctor_id');
+
     }
+    public function cities(){
+        return $this->belongsTo(City::class,'city_id');
+    }
+    public function qualification(){
+        return $this->belongsTo(Qualification::class,'qualification_id');
+    }
+    public function specializations(){
+        return $this->belongsTo(Specialization::class,'specialization_id');
+    }
+
 }
 
 

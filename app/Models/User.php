@@ -25,7 +25,7 @@ class User extends Authenticatable
         'phone',
         'address',
         'gender',
-        'city'
+        'city_id'
     ];
 
     /**
@@ -50,7 +50,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-//    public function appointment(){
-//     return $this->hasMany('App\Models\Appointment','user_id');
-//    }
+   public function cities(){
+    return $this->belongsTo(City::class,'city_id');
+   }
 }

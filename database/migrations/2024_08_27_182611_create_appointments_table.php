@@ -12,16 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('appointments', function (Blueprint $table) {
+
             $table->id();
-            $table->foreignId('doctor_id');
-            $table->foreignId('user_id');
-            $table->string ('start_time');
-            $table->string ('end_time');
-            $table->string('status')->default('pending');
-            $table->text('notes')->nullable();
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at')->nullable();
-            $table->softDeletes()->nullable();
+            $table->bigInteger('doctor_id');
+            $table->date('date');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->enum('status', [ 'active', 'completed','cancelled'])->default('active');
+            $table->timestamps();
 
         });
     }

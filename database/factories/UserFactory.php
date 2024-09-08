@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\City;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Faker\Generator as Faker;
@@ -34,7 +35,7 @@ class UserFactory extends Factory
             'phone' => $this->faker->optional()->phoneNumber,
             'address' => $this->faker->optional()->address,
             'age' => $this->faker->optional()->numberBetween(18, 65),
-            'city' => $this->faker->optional()->city,
+            'city_id' => City::all()->random()->id,
             'gender' => $this->faker->randomElement(['male', 'female']),
             'remember_token' => $this->faker->uuid,
             'created_at' => $this->faker->dateTime,

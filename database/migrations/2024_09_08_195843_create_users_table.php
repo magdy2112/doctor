@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->integer('age')->nullable();
-            $table->string('city')->nullable();
+            $table->integer('city_id')->nullable();
             $table->enum('gender', ['male', 'female'])->default('male');
             $table->rememberToken();
             $table->timestamp('created_at');

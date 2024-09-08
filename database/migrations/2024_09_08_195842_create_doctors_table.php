@@ -19,15 +19,20 @@ return new class extends Migration
             $table->string('photo')->nullable();
             $table->string('phone');
             $table->string('address');
-            $table->string('city');
+          
             $table->integer('age');
             $table->integer('experience');
-            $table->enum('qualification',['Specialist','Consultant ','Professor ']);
+            $table->integer('price');
+
+
             $table->text('description')->nullable();
             $table->enum('gender', ['male', 'female'])->default('male');
-            $table->enum('specialization', ['Cardiologist', 'Dentist', 'Surgeon', 'Radiologist', 'Neurologist', 'Dermatologist', 'ENT Specialist
+            $table->enum('status', ['active', 'inactive'])->default('inactive');
 
-            ', 'Hematologist', 'Psychiatrist', 'Audiologist']);
+
+            $table->bigInteger('qualification_id');
+            $table->bigInteger('specialization_id');
+            $table->bigInteger('city_id');
 
 
             $table->timestamp('email_verified_at')->nullable();
