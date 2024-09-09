@@ -31,14 +31,20 @@ class DocterRegisterRequest extends FormRequest
             'phone' => 'required|numeric',
             'address' => 'required|string|max:255',
             'age'=>'required|numeric',
-            'experience'=>'required|numeric',
-            'qualification'=>['required',rule::in(['Specialist','Consultant ','Professor '])],
-            'description'=>'string',
-            'city'=>'required|string',
+            'experience'=>'required',
+            'price'=>'required|numeric',
             'gender' => ['required', Rule::in(['male', 'female'])],
-            'specialization'=>['required',rule::in(['Cardiologist', 'Dentist', 'Surgeon', 'Radiologist', 'Neurologist', 'Dermatologist', 'ENT Specialist
+            'qualification_id'=>'required|numeric',
+            'city_id'=>'required|numeric',
+            'specialization_id'=>'required|numeric',
+            'description'=>'string',
 
-            ', 'Hematologist', 'Psychiatrist', 'Audiologist'])]
+
+
+
+
+
+
 
         ];
     }

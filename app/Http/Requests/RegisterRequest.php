@@ -27,7 +27,7 @@ class RegisterRequest extends FormRequest
             'name' =>'required|string|max:255',
             'email' =>'required|string|email|max:255',
             'password' => 'required|min:3|confirmed',
-            'city'=>'required|string',
+            'city_id'=>'required|numeric',
             'photo' => 'image|mimes:jpeg,png,jpg|max:2048',
             'phone' => 'numeric',
             'address' => 'string|max:255',
@@ -39,4 +39,3 @@ class RegisterRequest extends FormRequest
 }
 
 
-   

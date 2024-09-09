@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\City;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->integer('age')->nullable();
-            $table->integer('city_id')->nullable();
+            $table->foreignIdFor(City::class)->constrained()->nullable();
             $table->enum('gender', ['male', 'female'])->default('male');
             $table->rememberToken();
             $table->timestamp('created_at');

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 
 
 class Doctor extends Authenticatable
@@ -51,7 +53,7 @@ class Doctor extends Authenticatable
     }
 
     public function specialization (){
-        return $this->belongsTo(Specialization::class,'specialization');
+        return $this->belongsTo(Specialization::class,'specialization_id');
     }
     public function appointments(){
         return $this->hasMany(Appointment::class,'doctor_id');
@@ -66,9 +68,15 @@ class Doctor extends Authenticatable
     public function qualification(){
         return $this->belongsTo(Qualification::class,'qualification_id');
     }
-    public function specializations(){
-        return $this->belongsTo(Specialization::class,'specialization_id');
-    }
+    // public function specializations(){
+    //     return $this->belongsTo(Specialization::class,'specialization_id');
+    // }
+    // protected function Specialization_Id(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn () => $this->specialization_id == 1 ? 'dentist' : null,
+    //     );
+    // }
 
 }
 
