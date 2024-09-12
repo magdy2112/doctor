@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class Doctor extends Authenticatable
 {
     use HasFactory,HasApiTokens,Notifiable;
-
     protected $guard = 'doctor';
     protected $fillable = [
         'name',
@@ -35,20 +34,27 @@ class Doctor extends Authenticatable
        'city_id'
 
     ];
+
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
        /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+
+
+
         ];
     }
 
@@ -68,16 +74,19 @@ class Doctor extends Authenticatable
     public function qualification(){
         return $this->belongsTo(Qualification::class,'qualification_id');
     }
-    // public function specializations(){
-    //     return $this->belongsTo(Specialization::class,'specialization_id');
-    // }
-    // protected function Specialization_Id(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn () => $this->specialization_id == 1 ? 'dentist' : null,
-    //     );
-    // }
 
+//     public function getSpecializationAttribute()
+//     {
+//         return $this->specialization_id; // This will return the specialization name based on the cast
+//     }
+
+//     public function getSpecializationNameAttribute()
+// {
+//     return $this->specialization->name; // Assuming the specialization name is stored in the 'name' column of the 'specializations' table
+// }
+// // "qualification_id": 3,
+// //             "specialization_id": 14,
+// //             "city_id": 12,
 }
 
 

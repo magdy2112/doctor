@@ -30,6 +30,8 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::controller(DoctorController::class )->group(function(){
             Route::get('/doctorprofile', 'doctorprofile');
             Route::post('/update_reservation_status/{id}', 'update_reservation_status');
+            Route::post('/set_appoinments', 'set_appoinments');
+
 
 
         });;
