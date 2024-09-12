@@ -18,12 +18,17 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('/find_doctor', 'find_doctor');
         Route::post('/find_doctor_by_specialty', 'find_doctor_by_specialty');
         Route::get('/doctor_category', 'doctor_category');
+        Route::get('/all_appointments/{id}', 'all_appointments');
+        Route::post('user_reservation','user_reservation');
+
+        // Route::post('/all_appointments/{id}', 'all_appointments');
+
+
 
 
 
         // Route::post('/reservation', 'reservation');
         Route::controller(ReservationController::class)->group(function(){
-            Route::post('user_reservation','user_reservation');
 
 
         });
@@ -31,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function(){
             Route::get('/doctorprofile', 'doctorprofile');
             Route::post('/update_reservation_status/{id}', 'update_reservation_status');
             Route::post('/set_appoinments', 'set_appoinments');
+            Route::put('/cancel_appointment/{id}', 'cancel_appointment');
+
 
 
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
@@ -17,8 +18,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Doctor::class)->constrained();
             $table->foreignIdFor(User::class)->constrained();
-            $table->date('reservation_date')->nullable();
-            $table->enum('status',['pending','confirmed','cancelled'])->default('pending');
+            $table->foreignIdFor(Appointment::class)->nullable()->constrained();
+            $table->enum('status',['confirmed','cancelled'])->default('confirmed');
             $table->timestamps();
         });
     }

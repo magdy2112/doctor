@@ -46,22 +46,6 @@ class UserController extends Controller
 
 
 
-    // public function doctorprofile($id)
-    // {
-
-
-    //     $appointment = Doctor::where('status', 'active')
-    //         ->with(['specialization', 'cities', 'qualification'])
-    //         ->with(['appointments' => function ($query) {
-    //             $query->select('id', 'doctor_id', 'start_time', 'end_time', 'status', 'date');
-    //         }])->find($id);
-
-    //     if ($appointment) {
-    //         return $this->response(true, 200, 'ok', $appointment);
-    //     } else {
-    //         return $this->response(false, 404, 'No dates set');
-    //     }
-    // }
 
 
     public function doctorprofile($id)
@@ -142,4 +126,45 @@ class UserController extends Controller
 
         return $this->response(true, 200, 'ok', $categoriess);
     }
+    public function all_appointments($id){
+        $doctor=Doctor::find($id);
+        $appointments = $doctor->appointments->where('status','active');
+
+        $appointments->makeHidden('doctor_id');
+        return $this->response(true,200,'ok',$appointments);
+    }
+
+    public function user_reservation(Request $request){
+        $user = auth()->user();
+        if ($user) {
+
+            $reservation_request =  $request->validate([
+                'doctor_id' =>'required|integer|exists:doctors,id',
+                'appointment_id' =>'required|exists:appointments,id',
+                'user_id' =>'',
+
+            ]);
+
+
+            $reservation_request['doctor_id'] = request()->input('doctor_id');
+
+            $reservation_request['user_id'] = auth()->user()->id;
+
+            $reservation_request['appointment_id'] =request()->input('appointment_id');
+            
+            $all_doctor_appoinments = Appointment::where('doctor_id',$reservation_request['doctor_id'])->get();
+            foreach ($all_doctor_appoinments as $app) {
+                if($app->appointment_id == $reservation_request['appointment_id']){
+                    return $this->response(false,400,'You already have an appointment with this doctor on this date');
+                }else{
+                       Reservation::create($reservation_request);
+
+                }
+            }
+
+
+
+
+    }
+}
 }

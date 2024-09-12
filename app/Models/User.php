@@ -53,4 +53,7 @@ class User extends Authenticatable
    public function cities(){
     return $this->belongsTo(City::class,'city_id');
    }
+   public function Reservations(){
+    return $this->hasMany(Reservation::class);
+   }
 }

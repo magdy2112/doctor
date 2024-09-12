@@ -108,4 +108,20 @@ public function set_appoinments(Request $request)
     }
 
 
-}}
+}
+public function cancel_appointment($id){
+    $appointment = Appointment::find($id);
+    if ($appointment && $appointment->doctor_id == Auth::id()) {
+        // Appointment::where('id', $appointment->id)->update(
+        //     ['status' => 'active']
+        // );
+        $appointment->status = 'cancelled';
+        $appointment->save();
+
+
+        return $this->response(true, 200,  'Appointment canceled successfully',$appointment);
+    } else {
+        return $this->response(false, 404, 'Appointment not found or you are not authorized to updated it');
+    }
+}
+}
