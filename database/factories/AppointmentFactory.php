@@ -38,6 +38,7 @@ class AppointmentFactory extends Factory
             'start_time' => Carbon::createFromFormat('H', $startHour)->format('H'),
             'end_time' => Carbon::createFromFormat('H', $startHour + $this->faker->numberBetween(1, 4))->format('H'),
               'status' => $this->faker->randomElement(['active', 'completed','cancelled']),
+              'max_patients' => $this->faker->numberBetween(20, 50),
         ];
     }
 }

@@ -195,13 +195,8 @@ class UserController extends Controller
             $reservation_request['appointment_id'] = request()->input('appointment_id');
 
             $appointment = Appointment::where('id', request()->input('appointment_id'))->first();
-            if ($appointment) {
-                $appointment->count++;
-                if ($appointment->count >= 20) {
-                    $appointment->status = 'completed';
-                }
-                $appointment->save();
-            }
+            $maxCount = $appointment->max_appointments;
+
 
 
             $exist = Reservation::where('doctor_id', request()->input('doctor_id'))
@@ -212,8 +207,12 @@ class UserController extends Controller
             } else {
                 try {
                     if ($appointment) {
-                        $appointment->count++;
+                        $appointment->max_patients++;
+                        if ($appointment->max_patients >=  $maxCount) {
+                            $appointment->status = 'completed';
+                        }
                         $appointment->save();
+
 
                         $reservation =  Reservation::create($reservation_request);
                         return $this->response(true, 200, 'ok', $reservation);

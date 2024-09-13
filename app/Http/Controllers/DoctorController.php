@@ -39,34 +39,34 @@ use HttpResponse;
 
       }
 
-      public function update_reservation_status(request $request, $id) {
-        $reservation = Reservation::find($id);
+    //   public function update_reservation_status(request $request, $id) {
+    //     $reservation = Reservation::find($id);
 
-         $update_reservation_status = $request->validate([
-            'status' => 'required|in:confirmed,cancelled',
-
-
-         ]);
-        $doctor_id = $reservation['doctor_id'];
-          if( $doctor_id==auth()->user()->id){
+    //      $update_reservation_status = $request->validate([
+    //         'status' => 'required|in:confirmed,cancelled',
 
 
-            try {
-                $reservation->status = $request->input('status');
-                $reservation->save();
-                $user_id = $reservation->user_id;
-                $user = User::find($user_id);
-                $user->notify(new ReservationStatusNotification($reservation));
-                return $this->response(true, 200, 'Reservation confirmed successfully');
-            } catch (\Exception $e) {
-                return $this->response(false, 500, 'Error updating reservation status: ' );
-            }
+    //      ]);
+    //     $doctor_id = $reservation['doctor_id'];
+    //       if( $doctor_id==auth()->user()->id){
 
-          }else{
-            return $this->response(false, 403, 'Unauthorized');
-          }
 
-    }
+    //         try {
+    //             $reservation->status = $request->input('status');
+    //             $reservation->save();
+    //             $user_id = $reservation->user_id;
+    //             $user = User::find($user_id);
+    //             $user->notify(new ReservationStatusNotification($reservation));
+    //             return $this->response(true, 200, 'Reservation confirmed successfully');
+    //         } catch (\Exception $e) {
+    //             return $this->response(false, 500, 'Error updating reservation status: ' );
+    //         }
+
+    //       }else{
+    //         return $this->response(false, 403, 'Unauthorized');
+    //       }
+
+    // }
 
 public function set_appoinments(Request $request)
 {
@@ -74,6 +74,7 @@ public function set_appoinments(Request $request)
     $appointment->date = date('Y-m-d', strtotime($request->input('date')));
     $appointment->start_time = $request->input('starttime');
     $appointment->end_time = $request->input('endtime');
+    $appointment->max_patients = $request->input('max_patients');
     $Rules = [
 
         'starttime' => Rule::unique('appointments', 'start_time')->where(function ($query) use ($request) {
@@ -86,6 +87,9 @@ public function set_appoinments(Request $request)
                 ->where('date', $request->input('date'))
                 ->where('end_time', $request->input('endtime'));
         }),
+        'max_patients'=>'required|integer',
+        'date' => 'required',
+
     ];
 
 
