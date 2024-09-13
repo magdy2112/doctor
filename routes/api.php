@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('/doctor_category', 'doctor_category');
         Route::get('/all_appointments/{id}', 'all_appointments');
         Route::post('user_reservation','user_reservation');
+        Route::post('Available_appointments','Available_appointments');
+
 
         // Route::post('/all_appointments/{id}', 'all_appointments');
 

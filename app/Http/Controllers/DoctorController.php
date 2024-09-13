@@ -112,9 +112,7 @@ public function set_appoinments(Request $request)
 public function cancel_appointment($id){
     $appointment = Appointment::find($id);
     if ($appointment && $appointment->doctor_id == Auth::id()) {
-        // Appointment::where('id', $appointment->id)->update(
-        //     ['status' => 'active']
-        // );
+
         $appointment->status = 'cancelled';
         $appointment->save();
 
