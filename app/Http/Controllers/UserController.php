@@ -7,6 +7,7 @@ use App\Models\Doctor;
 use App\Models\Reservation;
 use App\Models\Specialization;
 use App\Models\User;
+use App\Notifications\ReservationNotification;
 use App\Traits\HttpResponse;
 use Exception;
 use Illuminate\Http\Request;
@@ -193,6 +194,7 @@ class UserController extends Controller
             $reservation_request['user_id'] = auth()->user()->id;
 
             $reservation_request['appointment_id'] = request()->input('appointment_id');
+            $doctor =Doctor::find( $reservation_request['doctor_id'])->first();
 
             $appointment = Appointment::where('id', request()->input('appointment_id'))->first();
             $maxCount = $appointment->max_appointments;
@@ -215,7 +217,11 @@ class UserController extends Controller
 
 
                         $reservation =  Reservation::create($reservation_request);
+
+                        $doctor->notify(new ReservationNotification($reservation));
+
                         return $this->response(true, 200, 'ok', $reservation);
+
                     }
                 } catch (\Exception $e) {
                     return $this->response(false, 400, 'Failed to create reservation');

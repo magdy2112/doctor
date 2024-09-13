@@ -39,6 +39,8 @@ Route::middleware('auth:sanctum')->group(function(){
             Route::post('/update_reservation_status/{id}', 'update_reservation_status');
             Route::post('/set_appoinments', 'set_appoinments');
             Route::put('/cancel_appointment/{id}', 'cancel_appointment');
+            Route::get('/get_reservations', 'get_reservations');
+
 
 
 
