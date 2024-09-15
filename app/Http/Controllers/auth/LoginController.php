@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Traits\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class LoginController extends Controller
 {
@@ -46,19 +47,19 @@ class LoginController extends Controller
 
     public function userlogout(Request $request)
     {
-        if (Auth::guard('api')->check()) {
-            Auth::guard('api')->logout();
-            $request->session()->invalidate();
-            return $this->response(true, 200, 'User logged out successfully');
+
+        $user=auth()->user();
+        if (   $user) {
+            # code...
+            $request->user()->currentAccessToken()->delete();
+            return $this->response(true,200,'user log out');
+        }else{
+            return $this->response(false,400,'error log out');
         }
+
+
+
     }
 
-    public function doctorlogout(Request $request)
-    {
-        if (Auth::guard('doctor')->check()) {
-            Auth::guard('doctor')->logout();
-            $request->session()->invalidate();
-            return $this->response(true, 200, 'doctor logged out successfully');
-        }
-    }
+
 }

@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\Token;
+use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Sanctum\Sanctum;
+
 
 class User extends Authenticatable
 {
@@ -56,4 +60,8 @@ class User extends Authenticatable
    public function Reservations(){
     return $this->hasMany(Reservation::class);
    }
+//    public function currentAccessToken()
+//    {
+//        return $this->hasOne( Token::class, 'user_id');
+//    }
 }

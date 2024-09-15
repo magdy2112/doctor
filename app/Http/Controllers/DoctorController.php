@@ -14,13 +14,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class DoctorController extends Controller
 {
 use HttpResponse;
 
-    public function doctorprofile(){
+    public function doctorprofile($guards='doctor'){
         $id=auth()->user()->id;
+
+    //    $doctor_reservations=  Doctor::with('reservations')->where('id',operator: $id)->paginate(10);
     //    $doctor_reservations=  Doctor::with('reservations')->where('id',operator: $id)->paginate(10);
     $doctor = Doctor::where('id',$id)
     ->with('specialization','cities','qualification')->get();
@@ -39,34 +42,6 @@ use HttpResponse;
 
       }
 
-    //   public function update_reservation_status(request $request, $id) {
-    //     $reservation = Reservation::find($id);
-
-    //      $update_reservation_status = $request->validate([
-    //         'status' => 'required|in:confirmed,cancelled',
-
-
-    //      ]);
-    //     $doctor_id = $reservation['doctor_id'];
-    //       if( $doctor_id==auth()->user()->id){
-
-
-    //         try {
-    //             $reservation->status = $request->input('status');
-    //             $reservation->save();
-    //             $user_id = $reservation->user_id;
-    //             $user = User::find($user_id);
-    //             $user->notify(new ReservationStatusNotification($reservation));
-    //             return $this->response(true, 200, 'Reservation confirmed successfully');
-    //         } catch (\Exception $e) {
-    //             return $this->response(false, 500, 'Error updating reservation status: ' );
-    //         }
-
-    //       }else{
-    //         return $this->response(false, 403, 'Unauthorized');
-    //       }
-
-    // }
 
 public function set_appoinments(Request $request)
 {
@@ -115,10 +90,12 @@ public function set_appoinments(Request $request)
 }
 public function cancel_appointment($id){
     $appointment = Appointment::find($id);
+    $reservation = Reservation::where('appointment_id',$id)->first();
     if ($appointment && $appointment->doctor_id == Auth::id()) {
-
+         $reservation->status='cancelled';
         $appointment->status = 'cancelled';
         $appointment->save();
+        $reservation->save();
 
 
         return $this->response(true, 200,  'Appointment canceled successfully',$appointment);
@@ -149,4 +126,40 @@ public function get_reservations(){
 
 
 }
+
+public function doctorlogout(Request $request)
+{
+    $doctor =auth()->user();
+    if ($doctor) {
+        $request->user()->currentAccessToken()->delete();
+        return $this->response(true, 200, 'doctor logged out successfully');
+    }else{
+        return $this->response(false, 401, 'doctor not logged in');
+    }
+
+}
+
+public function update_password(Request $request){
+    // dd($request->all());
+    $user = auth()->user();
+    if($user){
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|confirmed',
+        ]);
+        if(Hash::check($request->input('current_password'), $user->password)){
+            $user->update([
+                'password' => Hash::make($request->input('new_password')),
+            ]);
+            return $this->response(true, 200, 'Password updated successfully');
+        }else{
+            return $this->response(false, 400, 'Current password is incorrect');
+        }
+    }else{
+        return $this->response(false, 401, 'Unauthorized');
+    }
+}
+
+
+
 }

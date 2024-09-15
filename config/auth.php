@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'defaults' => [
-        'guard' => env('AUTH_GUARD', 'user'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'user'),
-    ],
+    // 'defaults' => [
+    //     'guard' => env('AUTH_GUARD', 'user'),
+    //     'passwords' => env('AUTH_PASSWORD_BROKER', 'user'),
+    // ],
 
     /*
     |--------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Resetpassword;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Reservation;
@@ -14,6 +15,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\Mail;
+
+
+
 
 class UserController extends Controller
 {
@@ -194,10 +202,10 @@ class UserController extends Controller
             $reservation_request['user_id'] = auth()->user()->id;
 
             $reservation_request['appointment_id'] = request()->input('appointment_id');
-            $doctor =Doctor::find( $reservation_request['doctor_id'])->first();
+            $doctor =Doctor::find( $reservation_request['doctor_id'])->where('status','active')->first();
 
             $appointment = Appointment::where('id', request()->input('appointment_id'))->first();
-            $maxCount = $appointment->max_appointments;
+            $maxCount = $appointment->max_patients;
 
 
 
@@ -209,8 +217,8 @@ class UserController extends Controller
             } else {
                 try {
                     if ($appointment) {
-                        $appointment->max_patients++;
-                        if ($appointment->max_patients >=  $maxCount) {
+                        $appointment->count++;
+                        if ($appointment->max_patients >=  $appointment->count) {
                             $appointment->status = 'completed';
                         }
                         $appointment->save();
@@ -218,7 +226,7 @@ class UserController extends Controller
 
                         $reservation =  Reservation::create($reservation_request);
 
-                        $doctor->notify(new ReservationNotification($reservation));
+                        // $doctor->notify(new ReservationNotification($reservation));
 
                         return $this->response(true, 200, 'ok', $reservation);
 
@@ -241,4 +249,91 @@ class UserController extends Controller
         $appointments->makeHidden('doctor_id');
         return $this->response(true, 200, 'ok', $appointments);
     }
+/******************************************************************************************************************************************************************************************************************************* */
+
+// public function my_reservations(){
+//     $user = auth()->user()->id;
+    // if($user){
+    //     $reservations = Reservation::where('user_id',   $user)->with(['doctor' => function($query){
+    //         $query->select(['id', 'name', 'photo']);
+    //     }, 'appointment' => function($query){
+    //         $query->select(['id', 'date', 'time']);
+    //     }])->get();
+
+    //     return $this->response(true, 200, 'ok', $reservations);
+    // }else{
+    //     return $this->response(false, 401, 'Unauthorized');
+    // }
+//     if ( $user) {
+//        $reservation =Reservation::where('user_id',$user)
+
+//     }
+// }
+/******************************************************************************************************************************************************************************************************************************* */
+
+public function update_password(Request $request){
+    // dd($request->all());
+    $user = auth()->user();
+    if($user){
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|confirmed',
+        ]);
+        if(Hash::check($request->input('current_password'), $user->password)){
+            $user->update([
+                'password' => Hash::make($request->input('new_password')),
+            ]);
+            return $this->response(true, 200, 'Password updated successfully');
+        }else{
+            return $this->response(false, 400, 'Current password is incorrect');
+        }
+    }else{
+        return $this->response(false, 401, 'Unauthorized');
+    }
+}
+/******************************************************************************************************************************************************************************************************************************* */
+// public function forget_password(Request $request){
+//              $request=$request->validate([
+//                 'email' =>'required|email|exists:users',
+//              ]);
+//    $sendmail= Mail::to($request['mail'])->queue(new Resetpassword());
+//    if ($sendmail) {
+//        $newpassword= Str::random(6);
+//        $user=User::where('email',$request['email'])->first();
+//        $user->password=Hash::make($newpassword);
+//        $user->save();
+//    }else{
+//     return $this->response(false, 400, 'Failed to send password reset email');
+//    }
+
+
+// }
+public function forget_password(Request $request, UrlGenerator $url)
+{
+    $request = $request->validate([
+        'email' => 'required|email|exists:users',
+    ]);
+
+    $url = $url->temporarySignedRoute(
+        'password',
+        now()->addMinutes(20),
+        ['email' => $request['email']]
+    );
+
+    // Send the URL to the user's email
+    // ...
+    $newPassword = Str::random(10);
+
+// Update the user's password
+$user = User::where('email', $request['email'])->first();
+$user->password=Hash::make($newPassword);
+$user->save();
+
+// Send the new password to the user's email
+$data = [
+    'newPassword' => $newPassword,
+];
+
+Mail::to($request['email'])->send(new Resetpassword($data));
+}
 }

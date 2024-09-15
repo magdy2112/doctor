@@ -21,6 +21,9 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('/all_appointments/{id}', 'all_appointments');
         Route::post('user_reservation','user_reservation');
         Route::post('Available_appointments','Available_appointments');
+        Route::post('update_user_password','update_password');
+
+
 
 
         // Route::post('/all_appointments/{id}', 'all_appointments');
@@ -29,17 +32,16 @@ Route::middleware('auth:sanctum')->group(function(){
 
 
 
-        // Route::post('/reservation', 'reservation');
-        Route::controller(ReservationController::class)->group(function(){
 
-
-        });
         Route::controller(DoctorController::class )->group(function(){
             Route::get('/doctorprofile', 'doctorprofile');
             Route::post('/update_reservation_status/{id}', 'update_reservation_status');
             Route::post('/set_appoinments', 'set_appoinments');
             Route::put('/cancel_appointment/{id}', 'cancel_appointment');
             Route::get('/get_reservations', 'get_reservations');
+            Route::delete('/doctorlogout', 'doctorlogout');
+        Route::post('update_doctor_password','update_password');
+
 
 
 
@@ -55,8 +57,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(LoginController::class)->group(function(){
         Route::post('/userlogin', 'userlogin');
         Route::post('/doctorLogin', 'doctorLogin');
-        Route::post('/userlogout', 'userlogout');
-        Route::post('/doctorlogout', 'doctorlogout');
+        Route::delete('/userlogout', 'userlogout')->middleware('auth:sanctum');
+        // Route::delete('/doctorlogout', 'doctorlogout')->middleware('auth:sanctum');
     });
     /////////////////////////////////////////////
 Route::controller(RegisterController::class)->group(function(){
@@ -66,6 +68,13 @@ Route::controller(RegisterController::class)->group(function(){
 
 });
 
+
+
 //*************************************************************** */
+
+Route::controller(UserController::class)->group(function(){
+    Route::post('/forget_password', 'forget_password')->name('password');
+
+});
 
 
