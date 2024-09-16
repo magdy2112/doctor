@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
 
 
+
         // Route::post('/all_appointments/{id}', 'all_appointments');
 
 
@@ -73,7 +74,8 @@ Route::controller(RegisterController::class)->group(function(){
 //*************************************************************** */
 
 Route::controller(UserController::class)->group(function(){
-    Route::post('/forget_password', 'forget_password')->name('password');
+    Route::post('/forget_password', 'forget_password')->name('password')->middleware('guest');
+    Route::post('get_new_password','get_new_password')->middleware('guest');
 
 });
 

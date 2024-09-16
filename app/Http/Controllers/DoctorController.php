@@ -20,8 +20,9 @@ class DoctorController extends Controller
 {
 use HttpResponse;
 
-    public function doctorprofile($guards='doctor'){
-        $id=auth()->user()->id;
+    public function doctorprofile(){
+        // $id=auth()->user()->id;
+        $id = Auth::guard('doctor')->user()->id;
 
     //    $doctor_reservations=  Doctor::with('reservations')->where('id',operator: $id)->paginate(10);
     //    $doctor_reservations=  Doctor::with('reservations')->where('id',operator: $id)->paginate(10);

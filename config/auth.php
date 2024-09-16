@@ -13,10 +13,10 @@ return [
     |
     */
 
-    // 'defaults' => [
-    //     'guard' => env('AUTH_GUARD', 'user'),
-    //     'passwords' => env('AUTH_PASSWORD_BROKER', 'user'),
-    // ],
+    'defaults' => [
+        'guard' => env('AUTH_GUARD', 'user'),
+        'passwords' => env('AUTH_PASSWORD_BROKER', 'user'),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -35,22 +35,26 @@ return [
     |
     */
 
- 'guards' => [
+//  'guards' => [
+//     'user' => [
+//         'driver' => 'session',
+//         'provider' => 'users',
+//     ],
+//     'doctor' => [
+//         'driver' => 'session',
+//         'provider' => 'doctors',
+//     ],
+'guards' => [
     'user' => [
-        'driver' => 'session',
+        'driver' => 'sanctum',
         'provider' => 'users',
     ],
     'doctor' => [
-        'driver' => 'session',
+        'driver' => 'sanctum',
         'provider' => 'doctors',
     ],
-    // 'api' => [
-    //     'driver' => 'token',
-    //     'provider' => 'users',
-    //     'token_column' => 'remember_token',
-
-    // ],
 ],
+
 
     /*
     |--------------------------------------------------------------------------

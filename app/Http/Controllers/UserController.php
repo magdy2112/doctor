@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\Resetpassword;
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\PasswordResetToken;
 use App\Models\Reservation;
 use App\Models\Specialization;
 use App\Models\User;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyPasswordReset;
 
 
 
@@ -292,48 +294,119 @@ public function update_password(Request $request){
     }
 }
 /******************************************************************************************************************************************************************************************************************************* */
-// public function forget_password(Request $request){
-//              $request=$request->validate([
-//                 'email' =>'required|email|exists:users',
-//              ]);
-//    $sendmail= Mail::to($request['mail'])->queue(new Resetpassword());
-//    if ($sendmail) {
-//        $newpassword= Str::random(6);
-//        $user=User::where('email',$request['email'])->first();
-//        $user->password=Hash::make($newpassword);
-//        $user->save();
-//    }else{
-//     return $this->response(false, 400, 'Failed to send password reset email');
-//    }
+// public function forget_password(Request $request, UrlGenerator $url)
+// {
+//     try {
+//         $request = $request->validate([
+//             'email' => 'required|email|exists:users',
+//         ]);
+
+//         $url = $url->temporarySignedRoute(
+//             'password',
+//             now()->addMinutes(20),
+//             ['email' => $request['email']]
+//         );
+
+//         $newPassword = Str::random(10);
+//         session(['new_password' => $newPassword]);
+
+//         // Update the user's password
+//         $user = User::where('email', $request['email'])->first();
+//         $useremail = $user->email;
+//         session(['useremail' => $useremail]);
+
+//         $data = [
+//             'newPassword' => $newPassword,
+//         ];
+
+//         Mail::to($request['email'])->sendNow(new Resetpassword($newPassword));
+//         return $this->response(true, 200, 'Please check your email.');
+//     } catch (Exception $e) {
+//         // Log the error
 
 
+//         // Return an error response
+//         return $this->response(false, 500, 'An error occurred while processing your request.');
+//     }
 // }
+
 public function forget_password(Request $request, UrlGenerator $url)
 {
-    $request = $request->validate([
-        'email' => 'required|email|exists:users',
+    try {
+        $request = $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $url = $url->temporarySignedRoute(
+            'password',
+            now()->addMinutes(20),
+            ['email' => $request['email']]
+        );
+
+        $newPassword = Str::random(10);
+
+        // Update the user's temporary password in the database
+        $user = User::where('email', $request['email'])->first();
+        $user->temp_password = Hash::make($newPassword);
+     
+        $user->save();
+
+        // Send email with the new password
+        Mail::to($request['email'])->sendNow(new Resetpassword($newPassword));
+        return $this->response(true, 200, 'Please check your email.');
+    } catch (Exception $e) {
+        // Log the error
+
+
+        // Return an error response
+        return $this->response(false, 500, 'An error occurred while processing your request.');
+    }
+}
+
+/******************************************************************************************************************************************************************************************************************************* */
+
+
+// public function get_new_password(Request $request)
+// {
+//     $request_get_password = $request->validate([
+//         'email' => 'required|email|exists:users',
+//         'new_password' => 'required',
+//     ]);
+
+//     $newPassword = session('new_password');
+//     dd(   $newPassword);
+//     $useremail = session('useremail');
+
+//     if ($request_get_password['new_password'] == $newPassword && $request_get_password['email'] == $useremail) {
+//         $user = User::where('email', $request_get_password['email'])->first();
+//         $user->password = Hash::make($newPassword);
+//         $user->save();
+//         return $this->response(true, 200, 'Password updated successfully try log in with new password');
+//     }else{
+//         return $this->response(false, 400, 'Invalid new password or email');
+//     }
+// }
+public function get_new_password(Request $request)
+{
+    $request_get_password = $request->validate([
+        'email' => 'required|email|exists:users,email',
+        'new_password' => 'required',
     ]);
 
-    $url = $url->temporarySignedRoute(
-        'password',
-        now()->addMinutes(20),
-        ['email' => $request['email']]
-    );
+    // Find the user by email
+    $user = User::where('email', $request_get_password['email'])->first();
 
-    // Send the URL to the user's email
-    // ...
-    $newPassword = Str::random(10);
+    // Check if the provided new_password matches the hashed temp_password
+    if (Hash::check($request_get_password['new_password'], $user->temp_password)) {
+        // Update the user's password
+        $user->password = Hash::make($request_get_password['new_password']);
+        // Clear the temp_password field
+        $user->temp_password = null;
+        $user->save();
 
-// Update the user's password
-$user = User::where('email', $request['email'])->first();
-$user->password=Hash::make($newPassword);
-$user->save();
-
-// Send the new password to the user's email
-$data = [
-    'newPassword' => $newPassword,
-];
-
-Mail::to($request['email'])->send(new Resetpassword($data));
+        return $this->response(true, 200, 'Password updated successfully. Try logging in with your new password.');
+    } else {
+        return $this->response(false, 400, 'Invalid new password or email');
+    }
 }
 }

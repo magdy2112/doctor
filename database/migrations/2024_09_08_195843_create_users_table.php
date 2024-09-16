@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreignIdFor(City::class)->constrained()->nullable();
             $table->enum('gender', ['male', 'female'])->default('male');
             $table->rememberToken();
+            
             $table->timestamp('created_at');
             $table->timestamp('updated_at')->nullable();
             $table->softDeletes()->nullable();
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
+            // $table->timestamp('updated_at')->nullable();
         });
 
         Schema::create('sessions', function (Blueprint $table) {
