@@ -29,10 +29,10 @@ class UserController extends Controller
 {
     use HttpResponse;
 
-    public function index()
+    public function user_home()
     {
 
-        $usercity = Auth()->user()->city_id;
+        $usercity = Auth::guard('user')->user()->city;
 
         $alldoctors = Doctor::with('specialization')
             ->where('city_id', $usercity)
@@ -60,12 +60,15 @@ class UserController extends Controller
         }
     }
 /******************************************************************************************************************************************************************************************************************************* */
-    public function doctorprofile($id)
+    public function doctorprofile(Request $request)
     {
+         $request->validate([
+            'doctor_id' =>'required|exists:doctors,id'
+        ]);
 
         $appointment = Doctor::where('status', 'active')
-
-        ->with(['specialization', 'cities', 'qualification']) ->find($id);
+        ->with(['specialization', 'cities', 'qualification'])
+         ->find(request()->input('doctor_id'));
 
         if ($appointment) {
             // Hide unnecessary attributes from the response
@@ -79,12 +82,13 @@ class UserController extends Controller
 
 /******************************************************************************************************************************************************************************************************************************* */
 
-    public function userprofile($id)
+    public function userprofile()
     {
+        $id= Auth::guard('user')->user()->id;
         try {
             $user = User::with('cities')->find($id);
 
-            if ($user->id == auth()->user()->id) {
+            if ($user->id == Auth::guard('user')->user()->id ) {
 
                 $user->makeHidden('city_id');
 
@@ -103,8 +107,12 @@ class UserController extends Controller
 
 /******************************************************************************************************************************************************************************************************************************* */
 
-    public function find_doctor(request $request)
+    public function find_doctor_name(request $request)
     {
+
+        $request->validate([
+            'name' =>'required|string'
+        ]);
         $doctors = Doctor::with('specialization')->where('name', 'like', "%{$request->input('name')}%")
 
             ->where('status', 'active')->select('name', 'address', 'photo', 'phone', 'specialization_id')->get();
@@ -124,6 +132,10 @@ class UserController extends Controller
     /******************************************************************************************************************************************************************************************************************************* */
     public function find_doctor_by_specialty(request $request)
     {
+
+        $request->validate([
+           'specialization_id' =>'required|exists:specializations,id'
+        ]);
         $doctors = Doctor::with('specialization')
 
             ->where('specialization_id', $request->input('specialization_id'))
@@ -178,79 +190,118 @@ class UserController extends Controller
 /******************************************************************************************************************************************************************************************************************************* */
 
 
-    public function user_reservation(Request $request)
-    {
-
-        $user = auth()->user();
-        if ($user) {
-
-            $reservation_request =  $request->validate([
-
-                'doctor_id' => 'required|integer|exists:doctors,id',
-                'appointment_id' => 'required|exists:appointments,id,doctor_id,' . $request->input('doctor_id') . ',status,active',
-                'user_id' => '',
-
-            ]);
-            //             required: This means that the appointment_id field is required in the request. If it's not present, the validation will fail.
-            // exists: This rule checks if the value of the appointment_id field exists in a specific table and column.
-            // appointments: This is the name of the table to check.
-            // id: This is the column name in the appointments table to check against the value of the appointment_id field.
-            // doctor_id: This is an additional column in the appointments table to filter the results. We want to check if the appointment_id exists in the appointments table, but only for the specific doctor_id that was sent in the request.
-            // $request->input('doctor_id'): This is the value of the doctor_id field sent in the request. We're using this value to filter the results in the appointments table.
-
-
-            $reservation_request['doctor_id'] = request()->input('doctor_id');
-
-            $reservation_request['user_id'] = auth()->user()->id;
-
-            $reservation_request['appointment_id'] = request()->input('appointment_id');
-            $doctor =Doctor::find( $reservation_request['doctor_id'])->where('status','active')->first();
-
-            $appointment = Appointment::where('id', request()->input('appointment_id'))->first();
-            $maxCount = $appointment->max_patients;
 
 
 
-            $exist = Reservation::where('doctor_id', request()->input('doctor_id'))
-                ->where('user_id', auth()->user()->id)
-                ->where('appointment_id', request()->input('appointment_id'))->count();
-            if ($exist) {
-                return $this->response(false, 400, 'Reservation Failed');
-            } else {
-                try {
-                    if ($appointment) {
-                        $appointment->count++;
-                        if ($appointment->max_patients >=  $appointment->count) {
-                            $appointment->status = 'completed';
-                        }
-                        $appointment->save();
 
 
-                        $reservation =  Reservation::create($reservation_request);
 
-                        // $doctor->notify(new ReservationNotification($reservation));
 
-                        return $this->response(true, 200, 'ok', $reservation);
 
-                    }
-                } catch (\Exception $e) {
-                    return $this->response(false, 400, 'Failed to create reservation');
-                }
-            }
-        }
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // public function user_reservation(Request $request)
+    // {
+
+    //     $user = auth()->user();
+    //     if ($user) {
+
+    //         $reservation_request =  $request->validate([
+
+    //             'doctor_id' => 'required|integer|exists:doctors,id',
+    //             'appointment_id' => 'required|exists:appointments,id,doctor_id,' . $request->input('doctor_id') . ',status,active',
+    //             'user_id' => '',
+
+    //         ]);
+    //         //             required: This means that the appointment_id field is required in the request. If it's not present, the validation will fail.
+    //         // exists: This rule checks if the value of the appointment_id field exists in a specific table and column.
+    //         // appointments: This is the name of the table to check.
+    //         // id: This is the column name in the appointments table to check against the value of the appointment_id field.
+    //         // doctor_id: This is an additional column in the appointments table to filter the results. We want to check if the appointment_id exists in the appointments table, but only for the specific doctor_id that was sent in the request.
+    //         // $request->input('doctor_id'): This is the value of the doctor_id field sent in the request. We're using this value to filter the results in the appointments table.
+
+
+    //         $reservation_request['doctor_id'] = request()->input('doctor_id');
+
+    //         $reservation_request['user_id'] = auth()->user()->id;
+
+    //         $reservation_request['appointment_id'] = request()->input('appointment_id');
+    //         $doctor =Doctor::find( $reservation_request['doctor_id'])->where('status','active')->first();
+
+    //         $appointment = Appointment::where('id', request()->input('appointment_id'))->first();
+    //         $maxCount = $appointment->max_patients;
+
+
+
+    //         $exist = Reservation::where('doctor_id', request()->input('doctor_id'))
+    //             ->where('user_id', auth()->user()->id)
+    //             ->where('appointment_id', request()->input('appointment_id'))->count();
+    //         if ($exist) {
+    //             return $this->response(false, 400, 'Reservation Failed');
+    //         } else {
+    //             try {
+    //                 if ($appointment) {
+    //                     $appointment->count++;
+    //                     if ($appointment->max_patients >=  $appointment->count) {
+    //                         $appointment->status = 'completed';
+    //                     }
+    //                     $appointment->save();
+
+
+    //                     $reservation =  Reservation::create($reservation_request);
+
+    //                     // $doctor->notify(new ReservationNotification($reservation));
+
+    //                     return $this->response(true, 200, 'ok', $reservation);
+
+    //                 }
+    //             } catch (\Exception $e) {
+    //                 return $this->response(false, 400, 'Failed to create reservation');
+    //             }
+    //         }
+    //     }
+    // }
 
 /******************************************************************************************************************************************************************************************************************************* */
 
-    public function Available_appointments()
-    {
-        $doctor = Doctor::find(request()->input('doctor_id'));
-        $appointments = $doctor->appointments->where('status', 'active');
-        //doctor hasmany appoinments
+    // public function Available_appointments()
+    // {
+    //     $doctor = Doctor::find(request()->input('doctor_id'));
+    //     $appointments = $doctor->appointments->where('status', 'active');
+    //     //doctor hasmany appoinments
 
-        $appointments->makeHidden('doctor_id');
-        return $this->response(true, 200, 'ok', $appointments);
-    }
+    //     $appointments->makeHidden('doctor_id');
+    //     return $this->response(true, 200, 'ok', $appointments);
+    // }
 /******************************************************************************************************************************************************************************************************************************* */
 
 // public function my_reservations(){
@@ -273,140 +324,15 @@ class UserController extends Controller
 // }
 /******************************************************************************************************************************************************************************************************************************* */
 
-public function update_password(Request $request){
-    // dd($request->all());
-    $user = auth()->user();
-    if($user){
-        $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|confirmed',
-        ]);
-        if(Hash::check($request->input('current_password'), $user->password)){
-            $user->update([
-                'password' => Hash::make($request->input('new_password')),
-            ]);
-            return $this->response(true, 200, 'Password updated successfully');
-        }else{
-            return $this->response(false, 400, 'Current password is incorrect');
-        }
-    }else{
-        return $this->response(false, 401, 'Unauthorized');
-    }
-}
-/******************************************************************************************************************************************************************************************************************************* */
-// public function forget_password(Request $request, UrlGenerator $url)
-// {
-//     try {
-//         $request = $request->validate([
-//             'email' => 'required|email|exists:users',
-//         ]);
-
-//         $url = $url->temporarySignedRoute(
-//             'password',
-//             now()->addMinutes(20),
-//             ['email' => $request['email']]
-//         );
-
-//         $newPassword = Str::random(10);
-//         session(['new_password' => $newPassword]);
-
-//         // Update the user's password
-//         $user = User::where('email', $request['email'])->first();
-//         $useremail = $user->email;
-//         session(['useremail' => $useremail]);
-
-//         $data = [
-//             'newPassword' => $newPassword,
-//         ];
-
-//         Mail::to($request['email'])->sendNow(new Resetpassword($newPassword));
-//         return $this->response(true, 200, 'Please check your email.');
-//     } catch (Exception $e) {
-//         // Log the error
-
-
-//         // Return an error response
-//         return $this->response(false, 500, 'An error occurred while processing your request.');
-//     }
-// }
-
-public function forget_password(Request $request, UrlGenerator $url)
-{
-    try {
-        $request = $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ]);
-
-        $url = $url->temporarySignedRoute(
-            'password',
-            now()->addMinutes(20),
-            ['email' => $request['email']]
-        );
-
-        $newPassword = Str::random(10);
-
-        // Update the user's temporary password in the database
-        $user = User::where('email', $request['email'])->first();
-        $user->temp_password = Hash::make($newPassword);
-     
-        $user->save();
-
-        // Send email with the new password
-        Mail::to($request['email'])->sendNow(new Resetpassword($newPassword));
-        return $this->response(true, 200, 'Please check your email.');
-    } catch (Exception $e) {
-        // Log the error
-
-
-        // Return an error response
-        return $this->response(false, 500, 'An error occurred while processing your request.');
-    }
-}
 
 /******************************************************************************************************************************************************************************************************************************* */
 
 
-// public function get_new_password(Request $request)
-// {
-//     $request_get_password = $request->validate([
-//         'email' => 'required|email|exists:users',
-//         'new_password' => 'required',
-//     ]);
 
-//     $newPassword = session('new_password');
-//     dd(   $newPassword);
-//     $useremail = session('useremail');
 
-//     if ($request_get_password['new_password'] == $newPassword && $request_get_password['email'] == $useremail) {
-//         $user = User::where('email', $request_get_password['email'])->first();
-//         $user->password = Hash::make($newPassword);
-//         $user->save();
-//         return $this->response(true, 200, 'Password updated successfully try log in with new password');
-//     }else{
-//         return $this->response(false, 400, 'Invalid new password or email');
-//     }
-// }
-public function get_new_password(Request $request)
-{
-    $request_get_password = $request->validate([
-        'email' => 'required|email|exists:users,email',
-        'new_password' => 'required',
-    ]);
+/******************************************************************************************************************************************************************************************************************************* */
 
-    // Find the user by email
-    $user = User::where('email', $request_get_password['email'])->first();
 
-    // Check if the provided new_password matches the hashed temp_password
-    if (Hash::check($request_get_password['new_password'], $user->temp_password)) {
-        // Update the user's password
-        $user->password = Hash::make($request_get_password['new_password']);
-        // Clear the temp_password field
-        $user->temp_password = null;
-        $user->save();
 
-        return $this->response(true, 200, 'Password updated successfully. Try logging in with your new password.');
-    } else {
-        return $this->response(false, 400, 'Invalid new password or email');
-    }
-}
+
 }

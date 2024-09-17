@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('date');
             $table->time('start_time');
             $table->time('end_time');
-            $table->integer('max_patients')->default(0);
+            $table->integer('max_patients')->nullable();
             $table->enum('status', [ 'active', 'completed','cancelled'])->default('active');
             $table->timestamps();
 
