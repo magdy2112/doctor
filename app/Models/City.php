@@ -10,7 +10,7 @@ class City extends Model
     use HasFactory;
     protected $fillable = ['city'];
     public function doctors(){
-        return $this->hasMany(Doctor::class,'doctor_id');
+        return $this->hasMany(Doctor::class,'city_id');
     }
     public function users(){
         return $this->hasMany(User::class,'user_id');

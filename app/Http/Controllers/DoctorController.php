@@ -49,72 +49,40 @@ use HttpResponse;
         }
     }
 
+  public function update_doctor_profile(Request $request){
+        $doctor_id= Doctor::find(Auth::guard('doctor')->user()->id);
+        $doctor=Doctor::find(Auth::guard('doctor')->user());
+        if ( $doctor_id) {
+            $request->validate([
+                'name' =>'string',
+                'email' => 'email|unique:doctors,email,',
+                'phone' =>'string|unique:doctors,phone,',
+                'address' =>'string',
+                'experience' =>'string',
+                'qualification_id' =>'integer',
+                'specialization_id' =>'integer',
+                'city_id' =>'integer',
+                'photo'=>'mimes:jpg,jpeg',
+            ]);
 
-// public function set_appoinments(Request $request)
+               if ($request->hasFile('photo')) {
+                $file = $request->file('photo');
+                // @unlink remove old image
+                @unlink(public_path('upload/doctor_images' .   $doctor->photo));
+                $file_name = date('YmdHi') . $file->getClientOriginalName();
+                $file->move(public_path('upload/doctor_images'), $file_name);
+                $doctor['photo'] = $file_name;
+               }
 
-// {
-//     $appointment = new Appointment();
-//     $appointment->date = date('Y-m-d', strtotime($request->input('date')));
-//     $appointment->start_time = $request->input('starttime');
-//     $appointment->end_time = $request->input('endtime');
-//     $appointment->max_patients = $request->input('max_patients');
-//     $Rules = [
-
-//         'starttime' => Rule::unique('appointments', 'start_time')->where(function ($query) use ($request) {
-//             $query->where('doctor_id', Auth::id())
-//                 ->where('date', $request->input('date'))
-//                 ->where('start_time', $request->input('starttime'));
-//         }),
-//         'endtime' => Rule::unique('appointments', 'end_time')->where(function ($query) use ($request) {
-//             $query->where('doctor_id', Auth::id())
-//                 ->where('date', $request->input('date'))
-//                 ->where('end_time', $request->input('endtime'));
-//         }),
-//         'max_patients'=>'required|integer',
-//         'date' => 'required',
-
-//     ];
-
-
-
-//     $validator = Validator::make($request->all(),   $Rules);
-//     $today = Carbon::today()->addDays(30)->format('Y-m-d');
-//     try{
-//         if ($validator->fails()||$request->input('date')>= $today) {
-//             return $this->response(false, 422, 'Validation errors', );
-//         } else {
-//             $appointment->fill($request->all());
-//             $appointment->doctor_id = Auth()->id();
-//             $appointment->save();
-
-//             return $this->response(true, 200, 'Appointment created successfully', $appointment);
-//         }
-//     }catch (\Exception ){
-//                   return $this->response(true, 400, ' Bad Request');
-
-//     }
+            $doctor->update($request->all());
+            return $this->response(true, 200, 'Profile updated successfully');
+        }else{
+            return $this->response(false, 404, 'doctor Not found');
+        }
 
 
-// }
+  }
 
-
-
-
-// public function cancel_appointment($id){
-//     $appointment = Appointment::find($id);
-//     $reservation = Reservation::where('appointment_id',$id)->first();
-//     if ($appointment && $appointment->doctor_id == Auth::id()) {
-//          $reservation->status='cancelled';
-//         $appointment->status = 'cancelled';
-//         $appointment->save();
-//         $reservation->save();
-
-
-//         return $this->response(true, 200,  'Appointment canceled successfully',$appointment);
-//     } else {
-//         return $this->response(false, 404, 'Appointment not found or you are not authorized to updated it');
-//     }
-// }
 
 
 
@@ -142,18 +110,7 @@ use HttpResponse;
 
 
 
-// public function doctorlogout(Request $request)
-// {
-//     $doctor =Auth::guard('doctor')->user();
 
-//     if ($doctor) {
-//         $request->user()->currentAccessToken()->delete();
-//         return $this->response(true, 200, 'doctor logged out successfully');
-//     }else{
-//         return $this->response(false, 401, 'doctor not logged in');
-//     }
-
-// }
 
 
 

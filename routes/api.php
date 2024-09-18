@@ -11,6 +11,7 @@ use App\Http\Controllers\auth_user\PassWordController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\auth_user\LogOutController;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
 use App\Models\Appointment;
@@ -100,7 +101,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('/find_doctor_by_specialty', 'find_doctor_by_specialty');
         Route::get('/doctor_category', 'doctor_category');
 
-      })->middleware( 'auth:sanctum');;
+      })->middleware( 'auth:sanctum');
 
 
       //*********************************************  END USER *******************************************************************/
@@ -112,8 +113,7 @@ use Illuminate\Support\Facades\Route;
             Route::controller(AppointmentsController::class)->group(function(){
                  Route::post('/doctor_set_appoinments', 'doctor_set_appoinments');
                  Route::post('/doctor_cancel_appointment', 'doctor_cancel_appointment');
-
-             });
+             })->middleware( 'auth:sanctum');
 
 
 
@@ -143,7 +143,10 @@ use Illuminate\Support\Facades\Route;
 
 
 
-
+        route::controller(CityController::class)->group(function(){
+            Route::post('/doctor_city', 'doctor_city');
+            Route::get('/all_city', 'all_city');
+        });
 
 
 

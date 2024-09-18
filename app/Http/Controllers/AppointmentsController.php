@@ -76,18 +76,56 @@ class AppointmentsController extends Controller
     }
 
 
-    public function doctor_cancel_appointment(Request $request){
-        $id = $request->input('id');
-        $appointment = Appointment::find($id);
-        $reservation = Reservation::where('appointment_id',$id)->first();
-        if ($appointment && $appointment->doctor_id == Auth::guard('doctor')->user()->id) {
-             $reservation->status='cancelled';
+
+    public function doctor_cancel_appointment(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $appointment = Appointment::find($id);
+
+            if (!$appointment) {
+                return $this->response(false, 404, 'Appointment not found');
+            }
+
+            if ($appointment->doctor_id !== Auth::guard('doctor')->user()->id) {
+                return $this->response(false, 403, 'You are not authorized to cancel this appointment');
+            }
+
+            $reservations = Reservation::where('appointment_id', $id)->get();
+
+            if ($reservations->isEmpty()) {
+                return $this->response(false, 404, 'Reservations not found');
+            }
+
+            Reservation::where('appointment_id', $id)->update(['status' => 'cancelled']);
+
             $appointment->status = 'cancelled';
             $appointment->save();
-            $reservation->save();
 
+            return $this->response(true, 200, 'Appointment cancelled successfully', $appointment);
+        } catch (\Exception $e) {
+            return $this->response(false, 500, 'something wrong ', );
+        }
+    }
 
-            return $this->response(true, 200,  'Appointment canceled successfully',$appointment);
+    public function update_Appoinment(Request $request){
+       $update_request= $request->validate([
+            'date' =>'date',
+           'starttime' =>'date_format:H:i',
+           'endtime' =>'date_format:H:i',
+           'max_patients' =>'integer',
+           'id'=>'exists:appointments,id',
+        ]);
+        $update_request['id'] =  request()->input('id');
+        $appointment = Appointment::find(  $update_request['id']);
+        if ($appointment && $appointment->doctor_id == Auth::guard('doctor')->user()->id) {
+            $appointment->update([
+                'date' => request()->input('date'),
+               'start_time' => request()->input('starttime'),
+                'end_time' => request()->input('endtime'),
+               'max_patients' => request()->input('max_patients'),
+            ]);
+            return $this->response(true, 200,  'Appointments updated successfully',$appointment);
         } else {
             return $this->response(false, 404, 'Appointment not found or you are not authorized to updated it');
         }
