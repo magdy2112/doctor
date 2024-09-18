@@ -24,8 +24,6 @@ use HttpResponse;
        }
       }
 
-
-
       public function update_DoctorPassword(Request $request){
 
         $doctor = Doctor::find(Auth::guard('doctor')->user()->id);
@@ -82,38 +80,4 @@ use HttpResponse;
 
 
   }
-
-
-
-
-
-// public function get_reservations(){
-
-//       $id= Auth::guard('doctor')->user()->id;
-//       $today= Carbon::today();
-
-//      $allreservations= Reservation::where('doctor_id',$id)
-//      ->where('created_at','>=',$today)->with('appointment')->get();
-//      $allreservations_count= Reservation::where('doctor_id',$id)
-//      ->where('created_at','>=',$today)->with('appointment')->count();
-
-//             if (  $allreservations) {
-//                 $allreservations->makeHidden(['user_id','doctor_id','appointment_id','id','status','created_at','updated_at']);
-//                 return $this->response(true, 200, 'ok',      ['all_reservation'=>$allreservations,'all_reservation_count'=>$allreservations_count]);
-//             }else{
-//                 return $this->response(false, 404, 'No reservations found');
-//             }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
 }

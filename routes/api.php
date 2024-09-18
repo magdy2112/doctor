@@ -12,7 +12,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\auth_user\LogOutController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\QualificationController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\SpecializationController;
 use App\Http\Controllers\UserController;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
@@ -20,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 //    'auth:sanctum'
 
-  //***************************************************  start doctor  ***********************************************************************/
+  //***************************************************  start doctor  **************************************************************************************************************/
 
   Route::controller(LoginDoctorController::class)
   ->group(function(){
@@ -57,14 +59,16 @@ use Illuminate\Support\Facades\Route;
     Route::controller(DoctorController::class)->group(function(){
         Route::get('/doctorprofile', 'doctorprofile');
         Route::post('update_DoctorPassword','update_DoctorPassword');
+        Route::post('update_doctor_profile','update_doctor_profile');
+
     })->middleware( 'auth:sanctum');;
 
-    //***************************************************  END DOCTOR  ***********************************************************************/
+    //***************************************************  END DOCTOR  ************************************************************************************************************/
 
 
 
 
-      //*********************************************  START USER  *******************************************************************/
+//*********************************************  START USER  ***********************************************************************************************************************/
 
       Route::controller(LoginController::class)->group(function(){
           Route::post('/userlogin', 'userlogin')->middleware('guest');
@@ -96,180 +100,76 @@ use Illuminate\Support\Facades\Route;
       Route::controller(UserController::class)->group(function(){
         Route::get('/user_home', 'user_home');
         Route::post('/doctorprofile', 'doctorprofile');
-        Route::get('/userprofile', 'userprofile');
-        Route::post('/find_doctor', 'find_doctor_name');
+        Route::get('/userprofile', 'userprofile')->middleware( 'auth:sanctum');
+        Route::post('/find_doctor_name', 'find_doctor_name');
         Route::post('/find_doctor_by_specialty', 'find_doctor_by_specialty');
         Route::get('/doctor_category', 'doctor_category');
 
-      })->middleware( 'auth:sanctum');
+      });
 
 
-      //*********************************************  END USER *******************************************************************/
+//*********************************************  END USER ************************************************************************************************************/
 
 
-        //*********************************************  START APPOINMENTS *******************************************************************/
 
+
+     //*********************************************  START APPOINMENTS ***********************************************************************************************/
 
             Route::controller(AppointmentsController::class)->group(function(){
                  Route::post('/doctor_set_appoinments', 'doctor_set_appoinments');
                  Route::post('/doctor_cancel_appointment', 'doctor_cancel_appointment');
+                 Route::post('/doctor_update_Appoinment', 'doctor_update_Appoinment');
              })->middleware( 'auth:sanctum');
 
+     //*********************************************  END APPOINMENTS **********************************************************************************************************/
 
 
 
 
 
+     //*********************************************  START CITY *****************************************************************************************************/
 
+       Route::controller(CityController::class)->group(function(){
+         Route::get('/all_city', 'all_city');
+         Route::post('/doctor_city', 'doctor_city');
+       });
 
+     //*********************************************  END CITY *****************************************************************************************************/
 
 
+    //*********************************************  START QUALIFICATION ***************************************************************************************************/
+      Route::controller( QualificationController::class)->group(function(){
+         Route::get('/all_qualifications','all_qualifications');
+         Route::post('/doctor_qualifications','doctor_qualifications');
 
+      });
 
+     //*********************************************  END QUALIFICATION ********************************************************************************************************/
 
 
 
 
+    //*********************************************  START RESEVATION*******************************************************************************************************/
+        Route::controller(ReservationController::class)->group(function(){
+            Route::get('/get_all_doctor_reservations','get_all_doctor_reservations');
+            Route::post('/get_special_doctor_reservation','get_special_doctor_reservation');
+            Route::get('/get_all_user_reservation','get_all_user_reservation');
+            Route::post('/user_cancel_reservation','user_cancel_reservation');
+            Route::post('/user_reservation','user_reservation');
+        })->middleware('auth:sanctum');
 
+     //*********************************************  END RESEVATION ****************************************************************************************************/
 
 
-      //***************end user***********************************/
 
 
 
+    //*********************************************  START Specializations********************************************************************************************/
 
+    Route::controller(SpecializationController::class)->group(function(){
+        Route::get('/all_specializations','all_specializations');
+        Route::post('/doctor_specializations','doctor_specializations');
+    });
 
-
-
-
-
-        route::controller(CityController::class)->group(function(){
-            Route::post('/doctor_city', 'doctor_city');
-            Route::get('/all_city', 'all_city');
-        });
-
-
-
-
-
-
-
-
-    // Route::controller(UserController::class)->group(function(){
-    //     Route::get('/user_index', 'index');
-    //     Route::get('/userprofile/{id}', 'userprofile');
-    //     Route::get('/doctorprofile/{id}', 'doctorprofile');
-    //     Route::post('/find_doctor', 'find_doctor');
-    //     Route::post('/find_doctor_by_specialty', 'find_doctor_by_specialty');
-    //     Route::get('/doctor_category', 'doctor_category');
-    //     Route::get('/all_appointments/{id}', 'all_appointments');
-    //     Route::post('user_reservation','user_reservation');
-    //     Route::post('Available_appointments','Available_appointments');
-    //     Route::post('update_user_password','update_password');
-
-    //      //end user
-
-
-
-
-
-           //start auth_doctor
-
-           //start Appointments
-
-            // Route::controller(AppointmentsController::class)->group(function(){
-            //     Route::post('/set_appoinments', 'set_appoinments');
-            // Route::put('/cancel_appointment/{id}', 'cancel_appointment');
-
-            // });
-
-
-
-           //end appoinment
-
-           //start reservation
-            // Route::controller(ReservationController::class)->group(function(){
-            //     Route::post('/user_reservation','user_reservation');
-            //     Route::get('/Available_appointments','Available_appointments');
-            // });
-            //end reservation
-
-
-
-            //start notification
-//             Route::controller(NotificationController::class)->group(function(){
-//                 Route::get('/get_notification','get_notification');
-// //             });
-//             //end notification
-
-
-//         });;
-
-
-//     });
-
-// });
-
-//end sanctum
-/*************************************************************************************************************************** */
-//doctor
-
-/****************************************************************************************** */
-// Route::controller(LoginDoctorController::class)
-// ->group(function(){
-//     Route::post('/doctorLogin', 'doctorLogin')->middleware('guest');
-
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//***************************************************** */
-    // Route::controller(LoginController::class)->group(function(){
-    //     Route::post('/userlogin', 'userlogin');
-    //     Route::post('/doctorLogin', 'doctorLogin');
-    //     Route::delete('/userlogout', 'userlogout')->middleware('auth:sanctum');
-    //     // Route::delete('/doctorlogout', 'doctorlogout')->middleware('auth:sanctum');
-    // });
-    /////////////////////////////////////////////
-// Route::controller(RegisterController::class)->group(function(){
-//     Route::post('/user_register', 'userregister');
-//     Route::post('/doctor_register', 'doctorregister');
-
-
-// });
-
-
-
-//*************************************************************** */
-
-// Route::controller(UserController::class)->group(function(){
-//     Route::post('/forget_password', 'forget_password')->name('password')->middleware('guest');
-//     Route::post('get_new_password','get_new_password')->middleware('guest');
-
-// });
-
+    //*********************************************  END Specializations***********************************************************************************************/
 

@@ -108,9 +108,10 @@ class AppointmentsController extends Controller
         }
     }
 
-    public function update_Appoinment(Request $request){
+    public function doctor_update_Appoinment(Request $request){
+        $today = Carbon::today();
        $update_request= $request->validate([
-            'date' =>'date',
+            'date' => 'date|after_or_equal:' . $today->format('Y-m-d'),
            'starttime' =>'date_format:H:i',
            'endtime' =>'date_format:H:i',
            'max_patients' =>'integer',
