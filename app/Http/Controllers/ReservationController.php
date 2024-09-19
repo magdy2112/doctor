@@ -87,7 +87,8 @@ public function user_cancel_reservation(Request $request){
 
     $appointment = Appointment::where([
         'id' => $reservation->appointment_id,
-        'status' <> 'cancelled'
+        'status' <> 'cancelled',
+
     ])->first();
     if ($reservation->exists()) {
         $reservation->delete();
