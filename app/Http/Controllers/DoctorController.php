@@ -51,7 +51,7 @@ use HttpResponse;
         $doctor_id= Doctor::find(Auth::guard('doctor')->user()->id);
         $doctor=Doctor::find(Auth::guard('doctor')->user());
         if ( $doctor_id) {
-            $request->validate([
+           $doctordata= $request->validate([
                 'name' =>'string',
                 'email' => 'email|unique:doctors,email,',
                 'phone' =>'string|unique:doctors,phone,',
@@ -72,7 +72,7 @@ use HttpResponse;
                 $doctor['photo'] = $file_name;
                }
 
-            $doctor->update($request->all());
+            $doctor->update($doctordata);
             return $this->response(true, 200, 'Profile updated successfully');
         }else{
             return $this->response(false, 404, 'doctor Not found');

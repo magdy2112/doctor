@@ -188,5 +188,33 @@ class UserController extends Controller
 
 
 /******************************************************************************************************************************************************************************************************************************* */
+public function updateprofile(Request $request){
+    $user = user::find( Auth::guard('user')->user()->id);
+    if( $user){
+       $userdata= $request->validate([
+            'name' =>'string',
+            'email' =>'email|unique:users,email,',
+            'phone' =>'string|min:11|unique:users,phone,',
+            'city_id' =>'exists:cities,id',
+            'address' =>'string',
+            'gender' =>'string',
+            'photo'=>'mimes:jpg,jpeg'
+        ]);
 
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            // @unlink remove old image
+            @unlink(public_path('upload/user_images' .    $user->photo));
+            $file_name = date('YmdHi') . $file->getClientOriginalName();
+            $file->move(public_path('upload/user_images'), $file_name);
+            $user['photo'] = $file_name;
+           }
+           $user->update($userdata);
+           return $this->response(true, 200, 'User updated successfully', $user);
+
+    }else{
+        return $this->response(false, 401, 'Unauthorized');
+    }
+
+}
 }

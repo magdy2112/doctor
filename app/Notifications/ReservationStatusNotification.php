@@ -2,26 +2,23 @@
 
 namespace App\Notifications;
 
+use App\Models\Appointment;
 use App\Models\Reservation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Collection;
+
+class ReservationStatusNotification  extends Notification implements ShouldQueue{
 
 
-
-class ReservationStatusNotification extends Notification
-{
     use Queueable;
-
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct(public Reservation $reservation)
+    public function __construct(public Appointment $appointment, public Collection $reservationIds)
     {
-        $this->reservation = $reservation;
+        $this->appointment = $appointment;
+        $this->reservationIds = $reservationIds;
     }
-
     /**
      * Get the notification's delivery channels.
      *
@@ -34,28 +31,24 @@ class ReservationStatusNotification extends Notification
 
     /**
      * Get the mail representation of the notification.
-     */
-    public function toDatabase(object $notifiable): array
+     */ public function toDatabase(object $notifiable): array
     {
-        $status = $this->reservation->status;
-        $message = '';
+        $notifications = [];
 
-        if ($status == 'confirmed') {
-            $message = 'Your reservation has been confirmed by the doctor.';
-        } elseif ($status == 'cancelled') {
-            $message = 'Your reservation has been cancelled by the doctor.';
-        }else{
-            $message = 'Your reservation is pending ' ;
+        foreach ($this->reservationIds as $userId) {
+            $notifications[] = [
+                'subject' => 'The reservation date has been changed.',
+                'message' => 'Dr. ' . $this->appointment->doctor->name .  'changed the appointment date.',
+                'reservation_date' => $this->appointment->date,
+                'user_id' => $userId,
+            ];
         }
 
-        return [
-            'message' => $message,
-            'reservation_date' => $this->reservation->reservation_date,
-            'doctor_name' => $this->reservation->doctor->name,
-        ];
+        return $notifications;
     }
 
-    /**
+
+        /**
      * Get the array representation of the notification.
      *
      * @return array<string, mixed>
@@ -66,4 +59,16 @@ class ReservationStatusNotification extends Notification
             //
         ];
     }
+
+
+
+
+
+
+
+
+
 }
+
+
+

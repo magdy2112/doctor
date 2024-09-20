@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Notifications;
+use App\Notifications\ReservationNotification;
 use Illuminate\Http\Request;
 
 use App\Models\Doctor;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
 class AppointmentsController extends Controller
 {
@@ -80,6 +83,9 @@ class AppointmentsController extends Controller
     public function doctor_cancel_appointment(Request $request)
     {
         try {
+            $request->validate([
+                'id' =>'required|exists:appointments,id',
+            ]);
             $id = $request->input('id');
             $appointment = Appointment::find($id);
 
@@ -91,22 +97,25 @@ class AppointmentsController extends Controller
                 return $this->response(false, 403, 'You are not authorized to cancel this appointment');
             }
 
+
             $reservations = Reservation::where('appointment_id', $id)->get();
 
             if ($reservations->isEmpty()) {
-                return $this->response(false, 404, 'Reservations not found');
-            }
+                    return $this->response(false, 404, 'Reservations not found');
+                }
 
-            Reservation::where('appointment_id', $id)->update(['status' => 'cancelled']);
+                $reservation_update= Reservation::where('appointment_id', $id)->update(['status' => 'cancelled']);
 
-            $appointment->status = 'cancelled';
-            $appointment->save();
+                $appointment->status = 'cancelled';
+                $appointment->save();
 
             return $this->response(true, 200, 'Appointment cancelled successfully', $appointment);
         } catch (\Exception $e) {
             return $this->response(false, 500, 'something wrong ', );
         }
     }
+
+
 
     public function doctor_update_Appoinment(Request $request){
         $today = Carbon::today();
@@ -126,6 +135,9 @@ class AppointmentsController extends Controller
                 'end_time' => request()->input('endtime'),
                'max_patients' => request()->input('max_patients'),
             ]);
+          
+
+
             return $this->response(true, 200,  'Appointments updated successfully',$appointment);
         } else {
             return $this->response(false, 404, 'Appointment not found or you are not authorized to updated it');

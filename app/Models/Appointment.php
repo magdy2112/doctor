@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Appointment extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     protected $fillable = [
         'doctor_id',
         'date',
@@ -26,6 +27,9 @@ class Appointment extends Model
         return $this->hasMany(Reservation::class,'appointment_id');
     }
 
-
+    // public function notifications()
+    // {
+    //   return $this->hasMany(Notifications::class, 'appoinment_id');
+    // }
 
 }

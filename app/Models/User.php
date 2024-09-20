@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -14,7 +15,7 @@ use Laravel\Sanctum\Sanctum;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable,HasApiTokens;
+    use HasFactory, Notifiable,HasApiTokens,SoftDeletes;
     protected $guard = 'user';
     /**
      * The attributes that are mass assignable.
@@ -60,8 +61,9 @@ class User extends Authenticatable
    public function Reservations(){
     return $this->hasMany(Reservation::class);
    }
-//    public function currentAccessToken()
+//    public function notifications()
 //    {
-//        return $this->hasOne( Token::class, 'user_id');
+//     return $this->hasMany(Notifications::class,'use_id');
 //    }
+
 }

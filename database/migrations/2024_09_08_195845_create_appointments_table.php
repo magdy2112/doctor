@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('count')->default(0);
             $table->enum('status', [ 'active', 'completed','cancelled'])->default('active');
             $table->timestamps();
+            $table->softDeletes()->nullable();
 
         });
     }

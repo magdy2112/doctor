@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('qualification');
             $table->timestamps();
+            $table->softDeletes()->nullable();
         });
     }
 

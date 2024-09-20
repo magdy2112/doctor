@@ -9,12 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Doctor extends Authenticatable
 {
-    use HasFactory,HasApiTokens,Notifiable;
+    use HasFactory,HasApiTokens,Notifiable,SoftDeletes;
     protected $guard = 'doctor';
     protected $fillable = [
         'name',
@@ -75,18 +74,10 @@ class Doctor extends Authenticatable
         return $this->belongsTo(Qualification::class,'qualification_id');
     }
 
-//     public function getSpecializationAttribute()
-//     {
-//         return $this->specialization_id; // This will return the specialization name based on the cast
-//     }
-
-//     public function getSpecializationNameAttribute()
-// {
-//     return $this->specialization->name; // Assuming the specialization name is stored in the 'name' column of the 'specializations' table
-// }
-// // "qualification_id": 3,
-// //             "specialization_id": 14,
-// //             "city_id": 12,
+//   public function notifications()
+//   {
+//     return $this->hasMany(Notifications::class,'doctor_id');
+//   }
 }
 
 

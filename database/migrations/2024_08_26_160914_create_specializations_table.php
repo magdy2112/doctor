@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('specialization');
             $table->timestamps();
+            $table->softDeletes()->nullable();
         });
     }
 

@@ -58,7 +58,7 @@ use Illuminate\Support\Facades\Route;
 
     Route::controller(DoctorController::class)->group(function(){
         Route::get('/doctorprofile', 'doctorprofile');
-        Route::post('update_DoctorPassword','update_DoctorPassword');
+        // Route::post('update_DoctorPassword','update_DoctorPassword');
         Route::post('update_doctor_profile','update_doctor_profile');
 
     })->middleware( 'auth:sanctum');;
@@ -104,6 +104,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('/find_doctor_name', 'find_doctor_name');
         Route::post('/find_doctor_by_specialty', 'find_doctor_by_specialty');
         Route::get('/doctor_category', 'doctor_category');
+        Route::post('/updateprofile', 'updateprofile');
 
       });
 
@@ -132,6 +133,7 @@ use Illuminate\Support\Facades\Route;
        Route::controller(CityController::class)->group(function(){
          Route::get('/all_city', 'all_city');
          Route::post('/doctor_city', 'doctor_city');
+         Route::get('/version', 'version');
        });
 
      //*********************************************  END CITY *****************************************************************************************************/

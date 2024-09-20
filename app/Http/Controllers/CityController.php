@@ -26,4 +26,12 @@ class CityController extends Controller
             return $this->response(true,200,'ok',$all_doctor);
         }
     }
+
+
+    public function version(){
+        return ['version' => '1.0.0',
+      'author' => 'doctors app',
+     'year'=> date('Y')
+    ];
+    }
 }

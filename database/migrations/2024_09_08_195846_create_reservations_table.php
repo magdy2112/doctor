@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignIdFor(Appointment::class)->nullable()->constrained();
             $table->enum('status',['confirmed','cancelled'])->default('confirmed');
             $table->timestamps();
+            $table->softDeletes()->nullable();
         });
     }
 
