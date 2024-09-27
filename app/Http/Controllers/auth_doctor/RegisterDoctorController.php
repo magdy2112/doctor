@@ -26,6 +26,7 @@ class RegisterDoctorController extends Controller
                 $file_name = date('YmdHi') . $file->getClientOriginalName();
                 $file->move(public_path('upload/doctor_images'), $file_name);
                 $user['photo'] = $file_name;
+                // $user->save();
             }
 
 

@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        Specialization::factory(10)->create();
+        // Specialization::factory(10)->create();
 
 
         // Create 50 users
@@ -103,5 +103,6 @@ class DatabaseSeeder extends Seeder
 
             Doctor::factory(25)->create();
             user::factory(70)->create();
+
         }
     }
